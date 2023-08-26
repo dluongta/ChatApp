@@ -7,6 +7,7 @@ import android.os.Bundle
 import android.widget.Button
 import android.widget.EditText
 import android.widget.ImageView
+import android.widget.Toast
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.google.firebase.auth.FirebaseAuth
@@ -19,6 +20,8 @@ class ChatActivity : AppCompatActivity() {
     private lateinit var messageAdapter: MessageAdapter
     private lateinit var messageList: ArrayList<Message>
     private lateinit var mDbRef: DatabaseReference
+    private lateinit var mAuth: FirebaseAuth
+
 
     var receiverRoom: String? = null
     var senderRoom: String? = null
@@ -32,6 +35,7 @@ class ChatActivity : AppCompatActivity() {
         val receiverUid = intent.getStringExtra("uid")
 
         val senderUid = FirebaseAuth.getInstance().currentUser?.uid
+        mAuth = FirebaseAuth.getInstance()
         mDbRef = FirebaseDatabase.getInstance().getReference()
         senderRoom = receiverUid + senderUid
         receiverRoom =  senderUid + receiverUid
@@ -60,6 +64,7 @@ class ChatActivity : AppCompatActivity() {
                 }
 
                 override fun onCancelled(error: DatabaseError) {
+
                 }
 
             })
@@ -67,13 +72,14 @@ class ChatActivity : AppCompatActivity() {
         sendButton.setOnClickListener {
             val message = messageBox.text.toString()
             val messageObject = Message(message,senderUid)
-            mDbRef.child("chats").child(senderRoom!!).child("message").push()
+            mDbRef.child("chats").child(senderRoom!!).child("messages").push()
                 .setValue(messageObject).addOnSuccessListener {
-                    mDbRef.child("chats").child(receiverRoom!!).child("message").push()
+                    mDbRef.child("chats").child(receiverRoom!!).child("messages").push()
                         .setValue(messageObject)
                 }
             messageBox.setText("")
         }
+
 
     }
 }
