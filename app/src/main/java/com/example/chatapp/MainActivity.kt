@@ -1,21 +1,27 @@
 package com.example.chatapp
 
-import android.content.Intent
-import androidx.appcompat.app.AppCompatActivity
+import android.Manifest
+import android.content.pm.PackageManager
+import android.os.Build
 import android.os.Bundle
-import android.view.Menu
-import android.view.MenuItem
+import androidx.appcompat.app.AppCompatActivity
+import androidx.core.app.ActivityCompat
+import androidx.core.content.ContextCompat
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.database.*
 
 class MainActivity : AppCompatActivity() {
-    private lateinit var userRecyclerView:RecyclerView
+
+    private lateinit var userRecyclerView: RecyclerView
     private lateinit var userList: ArrayList<User>
-    private lateinit var adapter:UserAdapter
+    private lateinit var adapter: UserAdapter
     private lateinit var mAuth: FirebaseAuth
     private lateinit var mDbRef: DatabaseReference
+
+    private val NOTIFICATION_PERMISSION_REQUEST_CODE = 101
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
@@ -24,46 +30,47 @@ class MainActivity : AppCompatActivity() {
         mDbRef = FirebaseDatabase.getInstance().getReference()
 
         userList = ArrayList()
-        adapter = UserAdapter(this,userList)
+        adapter = UserAdapter(this, userList)
 
         userRecyclerView = findViewById(R.id.userRecycleView)
         userRecyclerView.layoutManager = LinearLayoutManager(this)
         userRecyclerView.adapter = adapter
 
-        mDbRef.child("user").addValueEventListener(object: ValueEventListener {
-            override fun onDataChange(snapshot: DataSnapshot) {
+        loadUsers()
+        requestNotificationPermissionIfNeeded()
 
+        // Bắt đầu lắng nghe tin nhắn mới
+        MessageListenerManager.startListening(applicationContext)
+    }
+
+    private fun loadUsers() {
+        mDbRef.child("user").addValueEventListener(object : ValueEventListener {
+            override fun onDataChange(snapshot: DataSnapshot) {
                 userList.clear()
-                for(postSnapshot in snapshot.children) {
+                for (postSnapshot in snapshot.children) {
                     val currentUser = postSnapshot.getValue(User::class.java)
                     if (mAuth.currentUser?.uid != currentUser?.uid) {
-                        userList.add(currentUser!!)
+                        currentUser?.let { userList.add(it) }
                     }
-
                 }
-
                 adapter.notifyDataSetChanged()
             }
 
-            override fun onCancelled(error: DatabaseError) {
-            }
-
+            override fun onCancelled(error: DatabaseError) {}
         })
     }
 
-    override fun onCreateOptionsMenu(menu: Menu?): Boolean {
-        menuInflater.inflate(R.menu.menu,menu)
-        return super.onCreateOptionsMenu(menu)
-    }
-
-    override fun onOptionsItemSelected(item: MenuItem): Boolean {
-        if (item.itemId == R.id.logout) {
-            mAuth.signOut()
-            val intent = Intent(this,Login::class.java)
-            finish()
-            startActivity(intent)
-            return true
+    private fun requestNotificationPermissionIfNeeded() {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+            if (ContextCompat.checkSelfPermission(this, Manifest.permission.POST_NOTIFICATIONS)
+                != PackageManager.PERMISSION_GRANTED
+            ) {
+                ActivityCompat.requestPermissions(
+                    this,
+                    arrayOf(Manifest.permission.POST_NOTIFICATIONS),
+                    NOTIFICATION_PERMISSION_REQUEST_CODE
+                )
+            }
         }
-        return true
     }
 }
