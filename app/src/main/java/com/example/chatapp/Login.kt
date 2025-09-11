@@ -44,10 +44,16 @@ class Login : AppCompatActivity() {
         }
 
         btnLogin.setOnClickListener {
-            val email = edtEmail.text.toString()
-            val password = edtPassword.text.toString()
-            login(email, password)
+            val email = edtEmail.text.toString().trim()
+            val password = edtPassword.text.toString().trim()
+
+            if (email.isEmpty() || password.isEmpty()) {
+                Toast.makeText(this, "Invalid Username and Password", Toast.LENGTH_SHORT).show()
+            } else {
+                login(email, password)
+            }
         }
+
     }
 
     private fun login(email: String, password: String) {
