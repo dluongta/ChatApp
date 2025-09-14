@@ -49,7 +49,7 @@ class ChatFirebaseService : FirebaseMessagingService() {
         createNotificationChannel()
 
         val notification = NotificationCompat.Builder(this, CHANNEL_ID)
-            .setSmallIcon(R.drawable.send) // Thay icon bạn có
+            .setSmallIcon(R.drawable.chat) // Thay icon bạn có
             .setContentTitle(title)
             .setContentText(message)
             .setPriority(NotificationCompat.PRIORITY_HIGH)

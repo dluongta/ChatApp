@@ -39,7 +39,7 @@ object NotificationUtils {
         )
 
         val builder = NotificationCompat.Builder(context, CHANNEL_ID)
-            .setSmallIcon(R.drawable.send) // Bạn cần chuẩn bị icon này trong drawable
+            .setSmallIcon(R.drawable.chat) // Bạn cần chuẩn bị icon này trong drawable
             .setContentTitle(title)
             .setContentText(message)
             .setPriority(NotificationCompat.PRIORITY_HIGH)
