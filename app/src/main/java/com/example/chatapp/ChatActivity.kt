@@ -92,12 +92,12 @@ class ChatActivity : AppCompatActivity() {
                 messageBox.setText("")
 
                 // Gửi Notification cho người nhận
-                NotificationUtils.sendNotification(
+                /*NotificationUtils.sendNotification(
                     applicationContext,
                     chatName ?: "Tin nhắn mới",
                     messageText,
                     receiverUid!!
-                )
+                )*/
             }
         }
     }

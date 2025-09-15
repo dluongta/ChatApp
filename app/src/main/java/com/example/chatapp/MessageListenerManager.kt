@@ -19,6 +19,8 @@ object MessageListenerManager {
                 for (chatSnapshot in snapshot.children) {
                     val chatId = chatSnapshot.key ?: continue
                     if (!chatId.contains(currentUid)) continue
+                    if (!chatId.startsWith(currentUid)) continue
+
 
                     val messagesRef = chatsRef.child(chatId).child("messages")
 
