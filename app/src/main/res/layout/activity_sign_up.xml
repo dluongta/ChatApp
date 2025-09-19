@@ -10,7 +10,7 @@
         android:id="@+id/app_logo"
         android:layout_width="158dp"
         android:layout_height="158dp"
-        android:src="@drawable/luen"
+        android:src="@drawable/chat"
         android:layout_centerHorizontal="true"
         android:layout_marginTop="78dp" />
     <EditText
